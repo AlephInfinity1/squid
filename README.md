@@ -1,2 +1,9 @@
-# squid
-A programming language similar to MC Commands develop by C++
+# Squid
+Squid（鱿鱼）是一个语法格式类似于Minecraft Commands的编程语言，由C++开发。
+这个语言十分简单，熟悉Minecraft命令的玩家应该能很快上手。因为Squid的语法与其十分相似，且解决了许多后者没能优化的问题（例如参数传递和变量）。
+
+此repo用于开放其解释器的源代码，以及作为wiki的搭建处。
+
+Squid解释器由MIT协议开源，你可以自由修改、传播其源代码，且允许基于它制作闭源软件。
+
+此语言正处于开发阶段，源码也尚不完整。第一个被编译的版本的解释器将会在5月底（至6月初左右）发布。
