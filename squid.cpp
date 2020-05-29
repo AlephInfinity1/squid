@@ -5,7 +5,7 @@
 #include<vector>
 using namespace std;
 
-int run_command(string command){
+bool run_command(string command){
     stringstream inp(command);
     string root_com;
     string temp;
@@ -18,10 +18,13 @@ int run_command(string command){
         cout<<"Run system command"<<endl;
         temp=command.substr(6,command.size()-1);
         system(temp.c_str());
+    }else if(root_com=="output"){
+        temp=command.substr(6,command.size()-1);
+        cout<<temp<<endl;
     }else if(root_com=="exit"){
         cout<<"Bye!\nPress any key to exit"<<endl;
         getchar();
-        return 1;
+        return true;
     }else if(root_com=="runfile"){
         /*
         string path;
@@ -32,20 +35,20 @@ int run_command(string command){
     }else{
         cout<<"Unknown command"<<endl;
     }
-    return 0;
+    return false;
 }
 
 
 
 int main()
 {
-    cout<<"Squid beta_v0.1.0"<<endl<<"Copyright MineCommander 2020"<<endl;
+    cout<<"Squid Beta  v0b1"<<endl<<"Copyright MineCommander 2020"<<endl;
     string inp_com;
     while(1)
     {
         cout<<">>>";
         getline(cin,inp_com);
-        if(run_command(inp_com)==1)
+        if(run_command(inp_com))
           return 0;
     }
 }
