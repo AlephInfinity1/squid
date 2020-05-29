@@ -8,6 +8,7 @@ using namespace std;
 void run_command(string command){
 	stringstream inp(command);
 	string root_com;
+        string temp;
 	inp>>root_com;
 	
 	//cout<<root_com<<endl;
@@ -37,12 +38,10 @@ int main()
 {
 	cout<<"Squid beta_v0.1.0"<<endl<<"Copyright MineCommander 2020"<<endl;
 	string inp_com;
-	string temp;
-	
 	while(1)
 	{
 		cout<<">>>";
 		getline(cin,inp_com);
-		
+		run_command(inp_com);
 	}
 }
