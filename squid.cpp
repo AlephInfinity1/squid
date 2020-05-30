@@ -37,6 +37,13 @@ float str2flt(string str) {
     }
 }
 
+string flt2str(float flt) {
+    stringstream strm;
+    strm << flt;
+    string temp(strm.str());
+    return temp;
+}
+
 int varname_place(string var_name) {
     for (int i = 0; i < var_list.size(); i++) {
         if (var_name == var_list[i].name)
@@ -45,7 +52,44 @@ int varname_place(string var_name) {
     return 2147483647;
 }
 
+string compile_var(string command)
+{
+    /*
+    state=0 未识别到变量表达 或搭配缺失 只有后半部分
+    state=1 搭配缺失 只有前半部分
+    state=2 已识别完整的变量表达
+    */
+    int state = 0;
+    int facing = 1;
+    int notes=0, notee=0;
+    for (int i = command.size() - 1; i > 0 && i < command.size(); i = i - facing) {
+        if (facing == 1 && command[i] == '<' && command[i - 1] == '$') {
+            notes = i + 1;
+            facing = -1;
+            state = 1;
+        }
+        else if (command[i] == '>') {
+            notee = i - 1;
+            state = 2;
+        }
+        //cout << i << " " << facing << endl; //debug
+    }
+    //cout << command.substr(notes, notee-1) << endl; //debug
+    if (state == 2) {
+        int plc = varname_place(command.substr(notes, notee-1));
+        if (plc != 2147483647) {
+            command.replace(notes-2, notee+1, flt2str(var_list[plc].valve));
+            //cout << command << endl;    //debug
+        }
+        else {
+            command.erase(notes-2, notee+1);
+        }
+    }
+    return command;
+}
+
 bool run_command(string command,bool boardcast){
+    command = compile_var(command);
     stringstream inp(command);
     string root_com;
     string temp;
