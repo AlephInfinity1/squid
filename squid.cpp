@@ -5,6 +5,23 @@
 #include<vector>
 using namespace std;
 
+string subcommand(string command)
+{
+    int state=0;
+    int j;
+    for(int i=0;i<command.size();i++){
+        if(command[i]!=' ' && state==0)
+            state=1;
+        else if(command[i]==' ' && state==1)
+            state=2;
+        else if(command[i]!=' ' && state==2)
+            return command.substr(i,command.size());
+    }
+    return "";
+}
+
+
+
 bool run_command(string command){
     stringstream inp(command);
     string root_com;
@@ -16,11 +33,10 @@ bool run_command(string command){
     
     if(root_com=="system"){
         cout<<"Run system command"<<endl;
-        temp=command.substr(6,command.size()-1);
+        temp=subcommand(command);
         system(temp.c_str());
     }else if(root_com=="output"){
-        temp=command.substr(6,command.size()-1);
-        cout<<temp<<endl;
+        cout<<subcommand(command)<<endl;
     }else if(root_com=="exit"){
         cout<<"Bye!\nPress any key to exit"<<endl;
         getchar();
