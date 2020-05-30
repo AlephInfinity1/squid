@@ -8,7 +8,6 @@ using namespace std;
 string subcommand(string command)
 {
     int state=0;
-    int j;
     for(int i=0;i<command.size();i++){
         if(command[i]!=' ' && state==0)
             state=1;
@@ -19,8 +18,6 @@ string subcommand(string command)
     }
     return "";
 }
-
-
 
 bool run_command(string command){
     stringstream inp(command);
@@ -41,13 +38,15 @@ bool run_command(string command){
         cout<<"Bye!\nPress any key to exit"<<endl;
         getchar();
         return true;
-    }else if(root_com=="runfile"){
-        /*
+    }else if(root_com=="runfile"){    //wait for test :|
         string path;
-        path=command.substr(7,command.size()-1);
+        path=subcommand(command);
         ifsteam rf(path.c_str());
-        vector<string> commands;
-        */    //unfinish
+        while(!rf.eof()){
+            getline(rf,temp);
+            if(run_command(temp))
+                return true;
+        }
     }else{
         cout<<"Unknown command"<<endl;
     }
@@ -65,6 +64,6 @@ int main()
         cout<<">>>";
         getline(cin,inp_com);
         if(run_command(inp_com))
-          return 0;
+            return 0;
     }
 }
