@@ -24,10 +24,6 @@ bool run_command(string command){
     string root_com;
     string temp;
     inp>>root_com;
-    
-    //cout<<root_com<<endl;
-    //cout<<inp.str();    //debug
-    
     if(root_com=="system"){
         cout<<"Run system command"<<endl;
         temp=subcommand(command);
@@ -39,16 +35,16 @@ bool run_command(string command){
         getchar();
         return true;
     }else if(root_com=="runfile"){
-        /*    //wait for test :|
         string path;
         path=subcommand(command);
-        ifsteam rf(path.c_str());
+        ifstream rf(path.c_str());
         while(!rf.eof()){
             getline(rf,temp);
             if(run_command(temp))
                 return true;
         }
-        */
+        rf.close();
+        
     }else{
         cout<<"Unknown command"<<endl;
     }
@@ -59,11 +55,13 @@ bool run_command(string command){
 
 int main(int argc, char *argv[])
 {
+    /*
     string path("runfile ");
-    path.append(*argv);
-    if(argc>=1)
+    path.append(argv[1]);
+    if(argc>=2)
         if(run_command(path))
             return 0;
+    */  //:thonk:
     cout<<"Squid Beta  v0b1"<<endl<<"Copyright MineCommander 2020"<<endl;
     string inp_com;
     while(1)
