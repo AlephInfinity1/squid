@@ -28,10 +28,13 @@ string subcommand(string command)
 }
 
 float str2flt(string str) {
-    stringstream strm(str);
-    float temp;
-    strm >> temp;
-    return temp;
+    if (str.size() == 0) return 0;
+    else {
+        stringstream strm(str);
+        float temp;
+        strm >> temp;
+        return temp;
+    }
 }
 
 int varname_place(string var_name) {
@@ -94,10 +97,10 @@ bool run_command(string command,bool boardcast){
             for (int i = 0; i < var_list.size(); i++)
                 cout << var_list[i].name << " = " << var_list[i].valve << endl;
         }
-        else if (temp_rc == "operation") {
-            int plc= varname_place(temp_cg1);
+        else if (temp_rc == "operation" || temp_rc == "ope") {
+            int plc = varname_place(temp_cg1);
             if (plc == 2147483647) {
-                if(boardcast) cout << "The variable '" << temp_cg1 << "' does not exist" << endl;
+                if (boardcast) cout << "The variable '" << temp_cg1 << "' does not exist" << endl;
             }
             else {
                 float cg_temp = str2flt(temp_cg3);
@@ -120,13 +123,14 @@ bool run_command(string command,bool boardcast){
                         if (boardcast) cout << "Variable '" << temp_cg1 << "' has been divided by " << cg_temp << " (now " << var_list[plc].valve << ")" << endl;
                     }
                 }
-                else{
+                else if (temp_cg2 == "=" || temp_cg2 == "set") {
+                    var_list[plc].valve = cg_temp;
+                    if (boardcast) cout << "Variable '" << temp_cg1 << "' has been setted to " << cg_temp << endl;
+                }
+                else {
                     cout << "Unknown oprator '" << temp_cg2 << "'" << endl;
                 }
-
-
             }
-            
         }
     }
     else{
@@ -134,8 +138,6 @@ bool run_command(string command,bool boardcast){
     }
     return false;
 }
-
-
 
 int main(int argc, char *argv[])
 {
