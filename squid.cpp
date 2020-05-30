@@ -38,7 +38,8 @@ bool run_command(string command){
         cout<<"Bye!\nPress any key to exit"<<endl;
         getchar();
         return true;
-    }else if(root_com=="runfile"){    //wait for test :|
+    }else if(root_com=="runfile"){
+        /*    //wait for test :|
         string path;
         path=subcommand(command);
         ifsteam rf(path.c_str());
@@ -47,6 +48,7 @@ bool run_command(string command){
             if(run_command(temp))
                 return true;
         }
+        */
     }else{
         cout<<"Unknown command"<<endl;
     }
@@ -55,8 +57,13 @@ bool run_command(string command){
 
 
 
-int main()
+int main(int argc, char *argv[])
 {
+    string path("runfile ");
+    path.append(*argv);
+    if(argc>=1)
+        if(run_command(path))
+            return 0;
     cout<<"Squid Beta  v0b1"<<endl<<"Copyright MineCommander 2020"<<endl;
     string inp_com;
     while(1)
