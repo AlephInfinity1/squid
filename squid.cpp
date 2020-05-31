@@ -55,31 +55,35 @@ int varname_place(string var_name) {
 
 string compile_var(string cmd)  //我蜂了
 {
-    /*
+    ///*
     string command(cmd);
-    int nodes = 0, nodee = 0;
+    string varp;
     int facing = -1;
     int state = 0;
+    int nodes, nodee;
     int i = command.size() - 1;
     while (1) {
         if (i <= 0 || i >= command.size()) break;
 
         if (state == 0 && command[i] == '<' && command[i - 1] == '$') {
-            nodes = i - 1;
+            varp.push_back(command[i - 1]);
             state = 1;
+            nodes = i - 1;
             facing = 1;
         }
         else if (state == 1 && command[i] == '>') {
-            nodee = i;
             state = 2;
+            nodee = i;
+            varp.push_back(command[i]);
             break;
         }
-
+        if (state == 1) varp.push_back(command[i]);
         i += facing;
     }
     if (state == 2) {
-        string temp = cmd.substr(nodes + 2, nodee - 1);
-        int plc = varname_place(temp);
+        string varname(varp.substr(2, varp.size() - 2));    //掐头去尾
+        int plc = varname_place(varname);
+        //cout << s << " " << e << " " << temp << " " << plc << endl; //debug
         if (plc != VNP_ERROR) {
             string vlv(flt2str(var_list[plc].valve));
             command.replace(nodes, nodee, vlv);
@@ -89,11 +93,7 @@ string compile_var(string cmd)  //我蜂了
         }
         command = compile_var(command);
     }
-    else {
-        return command;
-    }
-    */
-    return cmd;
+    return command;
 }
 
 bool run_command(string command,bool boardcast){
