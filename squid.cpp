@@ -4,6 +4,7 @@
 #include<sstream>
 #include<vector>
 using namespace std;
+const int VNP_ERROR = 2147483647;
 
 struct sct_var
 {
@@ -52,40 +53,34 @@ int varname_place(string var_name) {
     return 2147483647;
 }
 
-string compile_var(string command)
+string compile_var(string cmd)
 {
-    /*
-    state=0 未识别到变量表达 或搭配缺失 只有后半部分
-    state=1 搭配缺失 只有前半部分
-    state=2 已识别完整的变量表达
-    */
+    string command(cmd);
+    int nodes = 0, nodee = 0;
+    int facing = -1;
     int state = 0;
-    int facing = 1;
-    int notes=0, notee=0;
-    for (int i = command.size() - 1; i > 0 && i < command.size(); i = i - facing) {
-        if (facing == 1 && command[i] == '<' && command[i - 1] == '$') {
-            notes = i + 1;
-            facing = -1;
+    int i = command.size() - 1;
+    while (1) {
+        if (i <= 0 || i >= command.size()) break;
+
+        if (state == 0 && command[i] == '<' && command[i - 1] == '$') {
+            nodes = i - 1;
             state = 1;
+            facing = 1;
         }
-        else if (command[i] == '>') {
-            notee = i - 1;
+        else if (state == 1 && command[i] == '>') {
+            nodee = i;
             state = 2;
+            break;
         }
-        //cout << i << " " << facing << endl; //debug
+
+        i += facing;
     }
-    //cout << command.substr(notes, notee-1) << endl; //debug
     if (state == 2) {
-        int plc = varname_place(command.substr(notes, notee-1));
-        if (plc != 2147483647) {
-            command.replace(notes-2, notee+1, flt2str(var_list[plc].valve));
-            //cout << command << endl;    //debug
-        }
-        else {
-            command.erase(notes-2, notee+1);
-        }
+        string temp = cmd.substr(nodes + 2, nodee - 1);
+        int plc = varname_place(temp);
+        if(plc!=V)
     }
-    return command;
 }
 
 bool run_command(string command,bool boardcast){
