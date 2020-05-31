@@ -58,6 +58,7 @@ string compile_var(string cmd)  //我蜂了
     ///*
     string command(cmd);
     string varp;
+    string varname;
     int facing = -1;
     int state = 0;
     int nodes, nodee;
@@ -80,10 +81,15 @@ string compile_var(string cmd)  //我蜂了
         if (state == 1) varp.push_back(command[i]);
         i += facing;
     }
+    
+    for (int i = 0; i < varp.size(); i++) { //掐头去尾
+        if (varp[i] != '$' && varp[i] != '<' && varp[i] != '>')
+            varname.push_back(varp[i]);
+    }
+
     if (state == 2) {
-        string varname(varp.substr(2, varp.size() - 2));    //掐头去尾
         int plc = varname_place(varname);
-        //cout << s << " " << e << " " << temp << " " << plc << endl; //debug
+        cout << nodes << " " << nodee << " " << varp << " " << varname << endl; //debug
         if (plc != VNP_ERROR) {
             string vlv(flt2str(var_list[plc].valve));
             command.replace(nodes, nodee, vlv);
