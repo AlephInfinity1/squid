@@ -50,11 +50,12 @@ int varname_place(string var_name) {
         if (var_name == var_list[i].name)
             return i;
     }
-    return 2147483647;
+    return VNP_ERROR;
 }
 
-string compile_var(string cmd)
+string compile_var(string cmd)  //我蜂了
 {
+    /*
     string command(cmd);
     int nodes = 0, nodee = 0;
     int facing = -1;
@@ -79,8 +80,20 @@ string compile_var(string cmd)
     if (state == 2) {
         string temp = cmd.substr(nodes + 2, nodee - 1);
         int plc = varname_place(temp);
-        if(plc!=V)
+        if (plc != VNP_ERROR) {
+            string vlv(flt2str(var_list[plc].valve));
+            command.replace(nodes, nodee, vlv);
+        }
+        else {
+            command.erase(nodes, nodee);
+        }
+        command = compile_var(command);
     }
+    else {
+        return command;
+    }
+    */
+    return cmd;
 }
 
 bool run_command(string command,bool boardcast){
@@ -121,7 +134,7 @@ bool run_command(string command,bool boardcast){
         stringstream trc(subcommand(command));
         trc >> temp_rc >> temp_cg1 >> temp_cg2 >> temp_cg3;
         if (temp_rc == "new") {
-            if (varname_place(temp_cg1) != 2147483647) {
+            if (varname_place(temp_cg1) != VNP_ERROR) {
                 if (boardcast) cout << "The variable '" << temp_cg1 << "' was already exists" << endl;
             }
             else {
@@ -138,7 +151,7 @@ bool run_command(string command,bool boardcast){
         }
         else if (temp_rc == "operation" || temp_rc == "ope") {
             int plc = varname_place(temp_cg1);
-            if (plc == 2147483647) {
+            if (plc == VNP_ERROR) {
                 if (boardcast) cout << "The variable '" << temp_cg1 << "' does not exist" << endl;
             }
             else {
