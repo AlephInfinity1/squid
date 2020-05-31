@@ -55,48 +55,33 @@ int varname_place(string var_name) {
 
 string compile_var(string cmd)  //我蜂了
 {
-    ///*
     string command(cmd);
-    string varp;
     string varname;
-    int facing = -1;
     int state = 0;
-    int nodes, nodee;
-    int i = command.size() - 1;
-    while (1) {
-        if (i <= 0 || i >= command.size()) break;
-
-        if (state == 0 && command[i] == '<' && command[i - 1] == '$') {
-            varp.push_back(command[i - 1]);
+    int ns = 0, ne = command.size() - 1;
+    for (int i = command.size() - 1; i > 0; i--) {
+        varname.push_back(command[i]);
+        if (command[i] == '<' && command[i - 1] == '$') {
+            varname.pop_back();
+            ns = i - 1;
             state = 1;
-            nodes = i - 1;
-            facing = 1;
-        }
-        else if (state == 1 && command[i] == '>') {
-            state = 2;
-            nodee = i;
-            varp.push_back(command[i]);
             break;
         }
-        if (state == 1) varp.push_back(command[i]);
-        i += facing;
+        else if (command[i] == '>') {
+            varname.clear();
+            ne = i;
+        }
     }
-    
-    for (int i = 0; i < varp.size(); i++) { //掐头去尾
-        if (varp[i] != '$' && varp[i] != '<' && varp[i] != '>')
-            varname.push_back(varp[i]);
-    }
-
-    if (state == 2) {
+    if (state == 1) {
         int plc = varname_place(varname);
-        cout << nodes << " " << nodee << " " << varp << " " << varname << endl; //debug
-        if (plc != VNP_ERROR) {
-            string vlv(flt2str(var_list[plc].valve));
-            command.replace(nodes, nodee, vlv);
+        if (plc == VNP_ERROR) {
+            command.erase(ns, ne);
         }
         else {
-            command.erase(nodes, nodee);
+            string vlv = flt2str(var_list[plc].valve);
+            command.replace(ns, ne, vlv);
         }
+        cout << ns << " " << ne << " " << varname << endl;  //debug
         command = compile_var(command);
     }
     return command;
