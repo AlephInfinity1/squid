@@ -73,15 +73,16 @@ string compile_var(string cmd)  //我蜂了
         }
     }
     if (state == 1) {
+        int ln = ne - ns + 1;
         int plc = varname_place(varname);
         if (plc == VNP_ERROR) {
-            command.erase(ns, ne);
+            command.erase(ns, ln);
         }
         else {
             string vlv = flt2str(var_list[plc].valve);
-            command.replace(ns, ne, vlv);
+            command.replace(ns, ln, vlv);
         }
-        cout << ns << " " << ne << " " << varname << endl;  //debug
+        //cout << ns << " " << ne << " " << varname << endl;  //debug
         command = compile_var(command);
     }
     return command;
