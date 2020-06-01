@@ -1,8 +1,11 @@
 var new a
 if $<a> is 0
-output Welcome to use Squid!\n
+output Welcome to use Squid!
 (endif)
 var operation a set 1
 if $<a> is 1
-output 欢迎使用Squid!\n
+output 欢迎使用Squid!
+(endif)
+if 1 is 2
+output This command will not run
 (endif)
