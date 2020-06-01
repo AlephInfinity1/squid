@@ -53,35 +53,36 @@ int varname_place(string var_name) {
     return VNP_ERROR;
 }
 
+string var_valve_str(string varname) {
+    int plc = varname_place(varname);
+    if (plc == VNP_ERROR)
+        return "";
+    else
+        return flt2str(var_list[plc].valve);
+}
+
 string compile_var(string cmd)  //我蜂了
 {
     string command(cmd);
     string varname;
     int state = 0;
     int ns = 0, ne = command.size() - 1;
-    for (int i = command.size() - 1; i > 0; i--) {
-        varname.push_back(command[i]);
-        if (command[i] == '<' && command[i - 1] == '$') {
-            varname.pop_back();
-            ns = i - 1;
-            state = 1;
-            break;
+    for (int i = 0; i < command.size(); i++) {
+        if (command[i] == '$' && command[i + 1] == '<') {
+            varname.clear();
+            ns = i;
+            i += 2;
         }
         else if (command[i] == '>') {
-            varname.clear();
+            state = 1;
             ne = i;
+            break;
         }
+        varname.push_back(command[i]);
     }
     if (state == 1) {
         int ln = ne - ns + 1;
-        int plc = varname_place(varname);
-        if (plc == VNP_ERROR) {
-            command.erase(ns, ln);
-        }
-        else {
-            string vlv = flt2str(var_list[plc].valve);
-            command.replace(ns, ln, vlv);
-        }
+        command.replace(ns, ln, var_valve_str(varname));
         //cout << ns << " " << ne << " " << varname << endl;  //debug
         command = compile_var(command);
     }
