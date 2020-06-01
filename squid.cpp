@@ -2,12 +2,17 @@
 #include<fstream>
 #include<string>
 #include<sstream>
+#include<cmath>
 #include<vector>
 using namespace std;
 const int VNP_ERROR = 2147483647;
-
-struct sct_var
-{
+struct ist {
+    float x1 = 0, x2 = 0;
+    string oprt;
+    bool enable = false;
+};
+ist if_status;
+struct sct_var {
     string name;
     float valve = 0;
 };
@@ -63,33 +68,53 @@ string var_valve_str(string varname) {
 
 string compile_var(string cmd)  //我蜂了
 {
-    string command(cmd);
     string varname;
     int state = 0;
-    int ns = 0, ne = command.size() - 1;
-    for (int i = 0; i < command.size(); i++) {
-        if (command[i] == '$' && command[i + 1] == '<') {
+    int ns = 0, ne = cmd.size() - 1;
+    for (int i = 0; i < cmd.size(); i++) {
+        if (cmd[i] == '$' && cmd[i + 1] == '<') {
             varname.clear();
+            state = 1;
             ns = i;
             i += 2;
         }
-        else if (command[i] == '>') {
-            state = 1;
+        else if (state == 1 && cmd[i] == '>') {
+            state = 2;
             ne = i;
             break;
         }
-        varname.push_back(command[i]);
+        varname.push_back(cmd[i]);
     }
-    if (state == 1) {
+    if (state == 2) {
         int ln = ne - ns + 1;
-        command.replace(ns, ln, var_valve_str(varname));
-        //cout << ns << " " << ne << " " << varname << endl;  //debug
-        command = compile_var(command);
+        cmd.replace(ns, ln, var_valve_str(varname));
+        cmd = compile_var(cmd);
     }
-    return command;
+    return cmd;
+}
+
+bool ifstatu(void) {
+    int oprt = 0;
+    if (if_status.oprt == ">" || if_status.oprt == "is_bigger_than")
+        oprt = 1;
+    else if (if_status.oprt == ">=" || if_status.oprt == "isnot_less_than")
+        oprt = 2;
+    else if (if_status.oprt == "<" || if_status.oprt == "is_less_than")
+        oprt = 3;
+    else if (if_status.oprt == "<=" || if_status.oprt == "isnot_bigger_than")
+        oprt = 4;
+    else if (if_status.oprt == "=" || if_status.oprt == "==" || if_status.oprt == "is")
+        oprt = 5;
+    else if (if_status.oprt == "!=" || if_status.oprt == "isnot")
+        oprt = 6;
+    if (if_status.enable == true)
+        return (if_status.x1 > if_status.x2 && oprt == 1) || (if_status.x1 >= if_status.x2 && oprt == 2) || (if_status.x1 < if_status.x2&& oprt == 3) || (if_status.x1 <= if_status.x2 && oprt == 4) || (if_status.x1 == if_status.x2 && oprt == 5) || (if_status.x1 != if_status.x2 && oprt == 6);
+    else
+        return true;
 }
 
 bool run_command(string command,bool boardcast){
+    if (!ifstatu) return false;
     command = compile_var(command);
     stringstream inp(command);
     string root_com;
@@ -111,11 +136,16 @@ bool run_command(string command,bool boardcast){
     else if (root_com == "runfile") {
         string path;
         path = subcommand(command);
-        ifstream rf(path.c_str());
-        while (!rf.eof()) {
-            getline(rf, temp);
-            if (run_command(temp,false))
-                return true;
+        ifstream rf(path.c_str(), ios::_Nocreate);
+        if (rf) {
+            while (!rf.eof()) {
+                getline(rf, temp);
+                if (run_command(temp,false))
+                    return true;
+            }
+        }
+        else {
+            cout << "File '" << path << "' does not exist" << endl;
         }
         rf.close();
     }
@@ -172,14 +202,28 @@ bool run_command(string command,bool boardcast){
                     var_list[plc].valve = cg_temp;
                     if (boardcast) cout << "Variable '" << temp_cg1 << "' has been setted to " << cg_temp << endl;
                 }
+                else if (temp_cg2 == "pow" || temp_cg2 == "power" || temp_cg2 == "^") {
+                    var_list[plc].valve = pow(var_list[plc].valve, cg_temp);
+                    if (boardcast) cout << "Variable '" << temp_cg1 << "' has been setted to " << var_list[plc].valve << endl;
+                }
                 else {
                     cout << "Unknown oprator '" << temp_cg2 << "'" << endl;
                 }
             }
         }
     }
+    else if (root_com == "if") {
+        stringstream comps(subcommand(command));
+        comps >> if_status.x1 >> if_status.oprt >> if_status.x2;
+        if_status.enable = true;
+        if (boardcast) cout << "Conditional judgment has been enabled";
+    }
+    else if (command == "(endif)") {
+        if_status.enable = false;
+        if (boardcast) cout << "Conditional judgment has been disabled";
+    }
     else{
-        if (boardcast) cout<<"Unknown command"<<endl;
+        if (boardcast) cout << "Unknown command '" << command << "'" << endl;
     }
     return false;
 }
@@ -193,7 +237,7 @@ int main(int argc, char *argv[])
         if(run_command(path))
             return 0;
     */  //:thonk:
-    cout << "Squid Beta  v0b1" << endl << "Copyright MineCommander 2020" << endl;
+    cout << "Squid Beta  v0b1" << endl << "Copyright MineCommander (C) 2020" << endl;
     string inp_com;
     while(1)
     {
